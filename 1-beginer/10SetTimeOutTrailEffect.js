@@ -71,7 +71,7 @@ function handleParticles() {
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 1; i++) {
     particlesArray.push(new Particle());
   }
 

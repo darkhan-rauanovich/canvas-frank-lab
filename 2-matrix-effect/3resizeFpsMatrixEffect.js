@@ -15,7 +15,6 @@ class Symbol {
   }
   draw(context) {
     this.text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
-    context.fillStyle = "#0aff0a";
     context.fillText(this.text, this.x * this.fontSize, this.y * this.fontSize);
 
     if (this.y * this.fontSize > this.canvasHeight && Math.random() > 0.98) {
@@ -42,19 +41,48 @@ class Effect {
       this.symbols[i].draw(ctx);
     }
   }
+
+  resize(width, height) {
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+    this.columns = this.canvasWidth/this.fontSize;
+    this.symbols = [];
+    this.#initalize();
+  }
 }
 
 
 const effect = new Effect(canvas.width, canvas.height);
+let lastTime = 0;
+const fps = 500;
+const nextFrame = 1000/fps;
+let timer = 0;
 
+function animate(timeStamp) {
+  const deltaTime = timeStamp - lastTime;
+  lastTime = timeStamp;
+  if (timer > nextFrame) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#0aff0a";
+    ctx.font = effect.fontSize + 'px monospace';
+    effect.symbols.forEach(symbol => symbol.draw(ctx))
 
-function animate() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.font = effect.fontSize + 'px monospace';
-  effect.symbols.forEach(symbol => symbol.draw(ctx))
+    timer = 0;
+  } else {
+    timer += deltaTime;
+  }
+
 
   requestAnimationFrame(animate);
 }
 
-animate();
+animate(0);
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  effect.resize(window.innerWidth, window.innerHeight);
+})
